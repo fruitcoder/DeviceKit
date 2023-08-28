@@ -442,6 +442,8 @@ public enum Device {
     ///
     /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP827/TODO)
     case appleWatchUltra
+  #elseif os(visionOS)
+    case appleVisionPro
   #endif
 
   /// Device is [Simulator](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html)
@@ -591,6 +593,12 @@ public enum Device {
       case "i386", "x86_64", "arm64": return simulator(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "watchOS"))
       default: return unknown(identifier)
       }
+		#elseif os(visionOS)
+		switch identifier {
+			case "RealityDevice14,1": return appleVisionPro
+			case "arm64": return simulator(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "visionOS"))
+			default: return unknown(identifier)
+		}
     #endif
   }
 
@@ -826,7 +834,7 @@ public enum Device {
       case .simulator(let model): return model.screenRatio
       case .unknown: return (width: -1, height: -1)
       }
-    #elseif os(tvOS)
+    #elseif os(tvOS) || os(visionOS)
       return (width: -1, height: -1)
     #endif
   }
@@ -1073,6 +1081,8 @@ public enum Device {
       return allTVs
     #elseif os(watchOS)
       return allWatches
+		#elseif os(visionOS)
+			return []
     #endif
   }
 
@@ -1289,7 +1299,7 @@ public enum Device {
     case .simulator(let model): return model.ppi
     case .unknown: return nil
     }
-    #elseif os(tvOS)
+    #elseif os(tvOS) || os(visionOS)
     return nil
     #endif
   }
@@ -1435,6 +1445,12 @@ extension Device: CustomStringConvertible {
       case .simulator(let model): return "Simulator (\(model.description))"
       case .unknown(let identifier): return identifier
       }
+		#elseif os(visionOS)
+			switch self {
+			case .appleVisionPro: return "Apple Vision Pro"
+			case .simulator(let model): return "Simulator (\(model.description))"
+			case .unknown(let identifier): return identifier
+			}
     #endif
   }
 
@@ -1556,6 +1572,12 @@ extension Device: CustomStringConvertible {
       case .simulator(let model): return "Simulator (\(model.safeDescription))"
       case .unknown(let identifier): return identifier
       }
+		#elseif os(visionOS)
+		switch self {
+		case .appleVisionPro: return "Apple Vision Pro"
+		case .simulator(let model): return "Simulator (\(model.description))"
+		case .unknown(let identifier): return identifier
+		}
     #endif
   }
 
@@ -2178,6 +2200,8 @@ extension Device {
       case .simulator(let model): return model.cpu
       case .unknown: return .unknown
     }
+	#else
+		return .unknown
   #endif
   }
 }
@@ -2225,6 +2249,8 @@ extension Device.CPU: CustomStringConvertible {
       case .s8: return "S8"
       case .unknown: return "unknown"
     }
+	#else
+		return "unknown"
   #endif
   }
 }

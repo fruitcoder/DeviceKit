@@ -39,6 +39,8 @@ class DeviceKitTests: XCTestCase {
     let otherDevice: Device = device == .appleTVHD ? .appleTV4K : .appleTVHD
     #elseif os(watchOS)
     let otherDevice: Device = device == .appleWatchUltra ? .appleWatchSeries8_41mm : .appleWatchUltra
+		#elseif os(visionOS)
+		let otherDevice: Device = device
     #endif
     XCTAssertEqual(otherDevice.isCanvas, nil)
     XCTAssertEqual(device.isCanvas, false)
